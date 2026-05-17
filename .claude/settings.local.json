@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir C:\\\\Users\\\\34689\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\cmdline-tools *)",
+      "Bash(cmd /c \"gradlew.bat --version 2>&1\")",
+      "Bash(./gradlew --version)"
+    ]
+  }
+}
