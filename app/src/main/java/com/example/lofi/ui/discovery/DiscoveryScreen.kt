@@ -14,11 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
@@ -31,6 +30,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,9 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.lofi.data.model.Category
 import com.example.lofi.data.model.Station
 
@@ -66,34 +65,25 @@ fun DiscoveryScreen(
             .statusBarsPadding()
     ) {
         TopAppBar(
-            modifier = Modifier.height(48.dp),
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+                Column {
                     Text(
-                        text = "发现电台",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp
+                        text = "Lofi Music",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "发现适合当前状态的电台",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             },
             actions = {
-                IconButton(
-                    onClick = onSettingsClick,
-                    modifier = Modifier.size(36.dp)
-                ) {
+                IconButton(onClick = onSettingsClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
-                        contentDescription = "设置",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(18.dp)
+                        contentDescription = "设置"
                     )
                 }
             },
@@ -102,9 +92,32 @@ fun DiscoveryScreen(
             )
         )
 
-        // Category tabs
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text(
+                    text = "Today flow",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "用一个轻柔的背景开始专注或放松",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(categories) { category ->
@@ -114,26 +127,24 @@ fun DiscoveryScreen(
                     onClick = { onCategorySelected(category.id) },
                     label = {
                         Text(
-                            text = "${category.name} ${category.count}",
-                            fontSize = 13.sp
+                            text = "${category.name} · ${category.count}",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        selectedLabelColor = MaterialTheme.colorScheme.onBackground,
-                        containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f),
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Station list
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(stations, key = { it.id }) { station ->
                 StationCard(
@@ -142,7 +153,7 @@ fun DiscoveryScreen(
                     onClick = { onStationClick(station) }
                 )
             }
-            item { Spacer(modifier = Modifier.height(80.dp)) }
+            item { Spacer(modifier = Modifier.height(88.dp)) }
         }
     }
 }
@@ -155,17 +166,18 @@ private fun StationCard(
 ) {
     val stationColor = Color(station.color.toInt())
 
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isCurrentlyPlaying)
-                stationColor.copy(alpha = 0.12f)
-            else
-                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f)
-        )
+        shape = MaterialTheme.shapes.large,
+        color = if (isCurrentlyPlaying) {
+            stationColor.copy(alpha = 0.14f)
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        tonalElevation = if (isCurrentlyPlaying) 3.dp else 0.dp,
+        shadowElevation = if (isCurrentlyPlaying) 2.dp else 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -173,51 +185,49 @@ private fun StationCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Color indicator
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(52.dp)
+                    .clip(CircleShape)
                     .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                stationColor.copy(alpha = 0.6f),
-                                stationColor.copy(alpha = 0.3f)
+                        Brush.radialGradient(
+                            listOf(
+                                stationColor.copy(alpha = 0.95f),
+                                stationColor.copy(alpha = 0.45f)
                             )
                         )
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (isCurrentlyPlaying) {
-                    Text(
-                        text = "♪",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.PlayArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.size(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = station.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = "${station.style1} · ${station.style2}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = stationColor.copy(alpha = 0.8f)
+                    text = station.scene,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = stationColor
                 )
-                station.custom?.let { custom ->
+                station.description?.let {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = custom,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -225,8 +235,7 @@ private fun StationCard(
             Icon(
                 imageVector = Icons.Filled.PlayArrow,
                 contentDescription = "播放",
-                tint = if (isCurrentlyPlaying) stationColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
-                modifier = Modifier.size(28.dp)
+                tint = if (isCurrentlyPlaying) stationColor else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

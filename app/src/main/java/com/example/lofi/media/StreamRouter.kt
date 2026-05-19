@@ -33,28 +33,5 @@ object StreamRouter {
 
         StreamType.M3U8 -> HlsMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(station.url))
-
-        StreamType.BILIBILI -> {
-            // For Bilibili, the URL in the MediaItem is the live page URL.
-            // Set up an HLS source — the actual stream URL will be resolved
-            // asynchronously before playback starts (see PlayerViewModel).
-            HlsMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(station.url))
-        }
-    }
-
-    suspend fun resolveStationMediaSource(station: Station): MediaSource = when (station.type) {
-        StreamType.BILIBILI -> {
-            val streamUrl = BilibiliStreamResolver.resolveStreamUrl(station.url)
-            if (streamUrl != null) {
-                HlsMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(streamUrl))
-            } else {
-                // Fallback: try direct (likely won't work, but prevents crash)
-                HlsMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(station.url))
-            }
-        }
-        else -> createMediaSource(station)
     }
 }

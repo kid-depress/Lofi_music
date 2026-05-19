@@ -112,7 +112,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     fun playStation(station: Station) {
         viewModelScope.launch {
             val controller = mediaController ?: return@launch
-            val mediaSource = StreamRouter.resolveStationMediaSource(station)
+            val mediaSource = StreamRouter.createMediaSource(station)
             val mediaItem = MediaItem.Builder()
                 .setMediaId(station.id)
                 .setUri(station.url)

@@ -1,14 +1,8 @@
 package com.example.lofi.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
@@ -64,25 +58,17 @@ fun LofiApp(
 
     LofiTheme(themeMode = themeMode) {
         Scaffold(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+            modifier = modifier.fillMaxSize(),
             bottomBar = {
                 if (currentScreen != Screen.Settings) {
                     Column {
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = slideInVertically(initialOffsetY = { it }),
-                            exit = slideOutVertically(targetOffsetY = { it })
-                        ) {
-                            MiniPlayer(
-                                station = playerState.currentStation,
-                                isPlaying = playerState.isPlaying,
-                                onPlayPause = { playerViewModel.togglePlayPause() },
-                                onClick = { currentScreen = Screen.Player },
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                        }
+                        MiniPlayer(
+                            station = playerState.currentStation,
+                            isPlaying = playerState.isPlaying,
+                            onPlayPause = { playerViewModel.togglePlayPause() },
+                            onClick = { currentScreen = Screen.Player },
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        )
 
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.surface,
@@ -94,20 +80,21 @@ fun LofiApp(
                                 onClick = { currentScreen = Screen.Player },
                                 icon = {
                                     Icon(
-                                        imageVector = if (currentScreen == Screen.Player)
+                                        imageVector = if (currentScreen == Screen.Player) {
                                             Icons.Filled.MusicNote
-                                        else
-                                            Icons.Outlined.MusicNote,
+                                        } else {
+                                            Icons.Outlined.MusicNote
+                                        },
                                         contentDescription = "播放"
                                     )
                                 },
-                                label = { Text("正在播放") },
+                                label = { Text("播放") },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = Color(playerState.currentStation.color.toInt()),
                                     selectedTextColor = Color(playerState.currentStation.color.toInt()),
                                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    indicatorColor = Color.Transparent
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
                                 )
                             )
                             NavigationBarItem(
@@ -115,10 +102,11 @@ fun LofiApp(
                                 onClick = { currentScreen = Screen.Discovery },
                                 icon = {
                                     Icon(
-                                        imageVector = if (currentScreen == Screen.Discovery)
+                                        imageVector = if (currentScreen == Screen.Discovery) {
                                             Icons.Filled.Search
-                                        else
-                                            Icons.Outlined.Search,
+                                        } else {
+                                            Icons.Outlined.Search
+                                        },
                                         contentDescription = "发现"
                                     )
                                 },
@@ -128,7 +116,7 @@ fun LofiApp(
                                     selectedTextColor = Color(playerState.currentStation.color.toInt()),
                                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    indicatorColor = Color.Transparent
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
                                 )
                             )
                         }

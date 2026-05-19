@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Pause
@@ -29,6 +28,10 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.VolumeDown
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +39,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,13 +50,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.lofi.data.model.Station
 
 @Composable
@@ -75,14 +77,9 @@ fun PlayerScreen(
 ) {
     val stationColor = Color(currentStation.color.toInt())
     val backgroundColor by animateColorAsState(
-        targetValue = stationColor.copy(
-            alpha = 0.12f,
-            red = stationColor.red * 0.4f + 0.6f,
-            green = stationColor.green * 0.4f + 0.6f,
-            blue = stationColor.blue * 0.4f + 0.6f
-        ),
-        animationSpec = tween(600),
-        label = "bg_color"
+        targetValue = stationColor.copy(alpha = 0.18f),
+        animationSpec = tween(500),
+        label = "background_color"
     )
 
     val pagerState = rememberPagerState(
@@ -111,8 +108,8 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
-                        stationColor.copy(alpha = 0.3f),
+                    listOf(
+                        stationColor.copy(alpha = 0.28f),
                         backgroundColor,
                         MaterialTheme.colorScheme.background
                     )
@@ -129,157 +126,169 @@ fun PlayerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Vinyl + station info
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                VinylDisc(
-                    isPlaying = isPlaying && isReady,
-                    accentColor = stationColor,
-                    modifier = Modifier.size(280.dp)
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Text(
-                    text = currentStation.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "${currentStation.style1} · ${currentStation.style2}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = stationColor.copy(alpha = 0.9f),
-                    textAlign = TextAlign.Center
-                )
-
-                if (!isReady && isPlaying) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "加载中...",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
-            }
-
-            // Volume slider
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.VolumeDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.size(18.dp)
-                )
-                Slider(
-                    value = volume,
-                    onValueChange = onVolumeChange,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp),
-                    colors = SliderDefaults.colors(
-                        thumbColor = stationColor,
-                        activeTrackColor = stationColor,
-                        inactiveTrackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
-                    )
-                )
-                Icon(
-                    imageVector = Icons.Filled.VolumeUp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Playback controls
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onSkipPrevious) {
-                    Icon(
-                        imageVector = Icons.Filled.SkipPrevious,
-                        contentDescription = "上一首",
-                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(24.dp))
-
-                FilledIconButton(
-                    onClick = onPlayPause,
-                    modifier = Modifier.size(72.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = stationColor.copy(alpha = 0.25f)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                     )
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isPlaying) "暂停" else "播放",
-                        tint = stationColor,
-                        modifier = Modifier.size(36.dp)
-                    )
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        VinylDisc(
+                            isPlaying = isPlaying && isReady,
+                            accentColor = stationColor,
+                            modifier = Modifier.size(200.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = currentStation.name,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "${currentStation.style1} · ${currentStation.style2}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = stationColor,
+                            textAlign = TextAlign.Center
+                        )
+                        if (!isReady && isPlaying) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "正在加载流媒体",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                IconButton(onClick = onSkipNext) {
-                    Icon(
-                        imageVector = Icons.Filled.SkipNext,
-                        contentDescription = "下一首",
-                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                        modifier = Modifier.size(40.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.VolumeDown,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Slider(
+                                value = volume,
+                                onValueChange = onVolumeChange,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = stationColor,
+                                    activeTrackColor = stationColor,
+                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.VolumeUp,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = onSkipPrevious) {
+                                Icon(Icons.Filled.SkipPrevious, contentDescription = "上一台")
+                            }
+                            Spacer(modifier = Modifier.width(20.dp))
+                            FilledIconButton(
+                                onClick = onPlayPause,
+                                modifier = Modifier.size(72.dp),
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = stationColor
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                    contentDescription = if (isPlaying) "暂停" else "播放",
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(20.dp))
+                            IconButton(onClick = onSkipNext) {
+                                Icon(Icons.Filled.SkipNext, contentDescription = "下一台")
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AssistChip(
+                        onClick = {},
+                        label = {
+                            val min = focusSeconds / 60
+                            val sec = focusSeconds % 60
+                            Text(String.format("专注 %02d:%02d", min, sec))
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Timer, contentDescription = null)
+                        }
+                    )
+                    AssistChip(
+                        onClick = { showSleepDialog = true },
+                        label = {
+                            Text(
+                                text = if (sleepTimerActive) {
+                                    val min = sleepTimerSeconds / 60
+                                    val sec = sleepTimerSeconds % 60
+                                    String.format("睡眠 %02d:%02d", min, sec)
+                                } else {
+                                    "睡眠定时"
+                                }
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Bedtime, contentDescription = null)
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            leadingIconContentColor = stationColor,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Timer chips
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FocusTimerChip(seconds = focusSeconds, accentColor = stationColor)
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                SleepTimerChip(
-                    remainingSeconds = sleepTimerSeconds,
-                    isActive = sleepTimerActive,
-                    accentColor = stationColor,
-                    onClick = { showSleepDialog = true }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "← 左右滑动切换电台 →",
+                text = "左右滑动切换电台",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
             )
         }
     }
@@ -297,75 +306,6 @@ fun PlayerScreen(
 }
 
 @Composable
-private fun FocusTimerChip(seconds: Long, accentColor: Color) {
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    val timeText = String.format("%02d:%02d", minutes, secs)
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(accentColor.copy(alpha = 0.12f))
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Timer,
-            contentDescription = null,
-            tint = accentColor.copy(alpha = 0.7f),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = "$timeText 专注",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 13.sp
-        )
-    }
-}
-
-@Composable
-private fun SleepTimerChip(
-    remainingSeconds: Long,
-    isActive: Boolean,
-    accentColor: Color,
-    onClick: () -> Unit
-) {
-    val text = if (isActive) {
-        val min = remainingSeconds / 60
-        val sec = remainingSeconds % 60
-        "${min}:${sec.toString().padStart(2, '0')}"
-    } else {
-        "睡眠定时"
-    }
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                if (isActive) accentColor.copy(alpha = 0.2f)
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.06f)
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Bedtime,
-            contentDescription = null,
-            tint = if (isActive) accentColor else MaterialTheme.colorScheme.outline,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = text,
-            color = if (isActive) accentColor else MaterialTheme.colorScheme.outline,
-            fontSize = 13.sp
-        )
-    }
-}
-
-@Composable
 private fun SleepTimerDialog(
     accentColor: Color,
     onSelect: (Int) -> Unit,
@@ -375,42 +315,36 @@ private fun SleepTimerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text("睡眠定时", color = MaterialTheme.colorScheme.onBackground)
-        },
+        title = { Text("睡眠定时") },
         text = {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 options.forEach { (minutes, label) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onSelect(minutes) }
-                            .padding(vertical = 12.dp, horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = if (minutes == 0) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.Bedtime,
-                            contentDescription = null,
-                            tint = accentColor.copy(alpha = 0.7f),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = label,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onSelect(minutes) }
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Bedtime,
+                                contentDescription = null,
+                                tint = accentColor
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(label)
+                        }
                     }
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp
+            TextButton(onClick = onDismiss) { Text("取消") }
+        }
     )
 }
