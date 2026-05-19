@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class PlayerUiState(
     val currentStation: Station = StationRepository.allStations.first(),
     val stations: List<Station> = StationRepository.allStations,

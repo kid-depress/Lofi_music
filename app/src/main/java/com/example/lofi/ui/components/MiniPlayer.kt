@@ -50,7 +50,7 @@ fun MiniPlayer(
             .height(64.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(
-                Color(0xFF12121F).copy(alpha = 0.95f)
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp),
@@ -89,7 +89,7 @@ fun MiniPlayer(
                         text = station.name,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

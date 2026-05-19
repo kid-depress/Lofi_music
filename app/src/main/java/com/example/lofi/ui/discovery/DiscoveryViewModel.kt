@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class DiscoveryUiState(
     val categories: List<Category> = StationRepository.categories,
     val selectedCategoryId: String = "all",

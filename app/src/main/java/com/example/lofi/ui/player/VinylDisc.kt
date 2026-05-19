@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun VinylDisc(
@@ -37,10 +38,10 @@ fun VinylDisc(
         label = "vinyl_rotate"
     )
 
-    val discColor = Color(0xFF1A1A2E)
-    val grooveColor = Color(0xFF2A2A3E)
+    val discColor = Color(0xFF1E1E28)
+    val grooveColor = Color(0xFF30303A)
     val labelColor = accentColor
-    val centerColor = Color(0xFF0D0D1A)
+    val centerColor = MaterialTheme.colorScheme.background
 
     Canvas(
         modifier = modifier.rotate(if (isPlaying) rotation else 0f)

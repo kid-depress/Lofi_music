@@ -76,10 +76,10 @@ fun PlayerScreen(
     val stationColor = Color(currentStation.color.toInt())
     val backgroundColor by animateColorAsState(
         targetValue = stationColor.copy(
-            alpha = 0.15f,
-            red = stationColor.red * 0.3f,
-            green = stationColor.green * 0.3f,
-            blue = stationColor.blue * 0.3f
+            alpha = 0.12f,
+            red = stationColor.red * 0.4f + 0.6f,
+            green = stationColor.green * 0.4f + 0.6f,
+            blue = stationColor.blue * 0.4f + 0.6f
         ),
         animationSpec = tween(600),
         label = "bg_color"
@@ -114,7 +114,7 @@ fun PlayerScreen(
                     colors = listOf(
                         stationColor.copy(alpha = 0.3f),
                         backgroundColor,
-                        Color(0xFF0D0D1A)
+                        MaterialTheme.colorScheme.background
                     )
                 )
             )
@@ -151,7 +151,7 @@ fun PlayerScreen(
                     text = currentStation.name,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White.copy(alpha = 0.95f),
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
 
@@ -169,7 +169,7 @@ fun PlayerScreen(
                     Text(
                         text = "加载中...",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.4f)
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -183,7 +183,7 @@ fun PlayerScreen(
                 Icon(
                     imageVector = Icons.Filled.VolumeDown,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.3f),
+                    tint = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(18.dp)
                 )
                 Slider(
@@ -195,13 +195,13 @@ fun PlayerScreen(
                     colors = SliderDefaults.colors(
                         thumbColor = stationColor,
                         activeTrackColor = stationColor,
-                        inactiveTrackColor = Color.White.copy(alpha = 0.15f)
+                        inactiveTrackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
                     )
                 )
                 Icon(
                     imageVector = Icons.Filled.VolumeUp,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.3f),
+                    tint = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -218,7 +218,7 @@ fun PlayerScreen(
                     Icon(
                         imageVector = Icons.Filled.SkipPrevious,
                         contentDescription = "上一首",
-                        tint = Color.White.copy(alpha = 0.8f),
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -246,7 +246,7 @@ fun PlayerScreen(
                     Icon(
                         imageVector = Icons.Filled.SkipNext,
                         contentDescription = "下一首",
-                        tint = Color.White.copy(alpha = 0.8f),
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -277,7 +277,7 @@ fun PlayerScreen(
             Text(
                 text = "← 左右滑动切换电台 →",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.outline,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -318,7 +318,7 @@ private fun FocusTimerChip(seconds: Long, accentColor: Color) {
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = "$timeText 专注",
-            color = Color.White.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 13.sp
         )
     }
@@ -344,7 +344,7 @@ private fun SleepTimerChip(
             .clip(RoundedCornerShape(20.dp))
             .background(
                 if (isActive) accentColor.copy(alpha = 0.2f)
-                else Color.White.copy(alpha = 0.08f)
+                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.06f)
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -353,13 +353,13 @@ private fun SleepTimerChip(
         Icon(
             imageVector = Icons.Filled.Bedtime,
             contentDescription = null,
-            tint = if (isActive) accentColor else Color.White.copy(alpha = 0.5f),
+            tint = if (isActive) accentColor else MaterialTheme.colorScheme.outline,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = text,
-            color = if (isActive) accentColor else Color.White.copy(alpha = 0.5f),
+            color = if (isActive) accentColor else MaterialTheme.colorScheme.outline,
             fontSize = 13.sp
         )
     }
@@ -376,7 +376,7 @@ private fun SleepTimerDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("睡眠定时", color = Color.White)
+            Text("睡眠定时", color = MaterialTheme.colorScheme.onBackground)
         },
         text = {
             Column {
@@ -398,7 +398,7 @@ private fun SleepTimerDialog(
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = label,
-                            color = Color.White.copy(alpha = 0.85f),
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -407,10 +407,10 @@ private fun SleepTimerDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消", color = Color.White.copy(alpha = 0.5f))
+                Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        containerColor = Color(0xFF1A1A2E),
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp
     )
 }

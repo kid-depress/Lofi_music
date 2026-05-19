@@ -22,12 +22,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -54,28 +56,44 @@ fun DiscoveryScreen(
     currentPlayingId: String?,
     onCategorySelected: (String) -> Unit,
     onStationClick: (Station) -> Unit,
+    onSettingsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0D0D1A))
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
     ) {
         TopAppBar(
+            modifier = Modifier.height(48.dp),
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.8f),
-                        modifier = Modifier.size(24.dp)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "发现电台",
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Bold
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "设置",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             },
@@ -101,10 +119,10 @@ fun DiscoveryScreen(
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color.White.copy(alpha = 0.15f),
-                        selectedLabelColor = Color.White,
-                        containerColor = Color.White.copy(alpha = 0.05f),
-                        labelColor = Color.White.copy(alpha = 0.6f)
+                        selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        selectedLabelColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f),
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
@@ -144,9 +162,9 @@ private fun StationCard(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isCurrentlyPlaying)
-                stationColor.copy(alpha = 0.15f)
+                stationColor.copy(alpha = 0.12f)
             else
-                Color.White.copy(alpha = 0.04f)
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f)
         )
     ) {
         Row(
@@ -187,7 +205,7 @@ private fun StationCard(
                     text = station.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White.copy(alpha = 0.9f)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -199,7 +217,7 @@ private fun StationCard(
                     Text(
                         text = custom,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.35f)
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -207,7 +225,7 @@ private fun StationCard(
             Icon(
                 imageVector = Icons.Filled.PlayArrow,
                 contentDescription = "播放",
-                tint = if (isCurrentlyPlaying) stationColor else Color.White.copy(alpha = 0.3f),
+                tint = if (isCurrentlyPlaying) stationColor else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
                 modifier = Modifier.size(28.dp)
             )
         }
